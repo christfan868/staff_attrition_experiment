@@ -99,12 +99,10 @@ for index, row in testDF.iterrows():
 
         # Select the first row [most pressing issue].
         root = staff_profile.iloc[[0]]
-        root_key = root.index.values[0]
-        # print("Root issue:", root_key)
-        root_value = staff_profile['score'][root_key].values[0]
-        # print("Root value: ", root_value)
-        target_value = retention_profile[root_key].values[0][0]
-        # print("Retention value:", target_value)
+        root_key = (root.index.values).tolist()[0]
+        print(type(root_key))
+        root_value = staff_profile['score'][root_key]
+        target_value = retention_profile[root_key].values[0]
 
         # Compare the value to the corresponding value in the retention profile.
         if root_value < target_value:
