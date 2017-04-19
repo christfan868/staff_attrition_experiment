@@ -110,8 +110,13 @@ for index, row in testDF.iterrows():
         if root_value < target_value:
 
             # Make a recommendation.
-            insight = "I've noticed that this member of staff's {} is {} the norm. " \
-                      "You may want to consider {} his/her {} by {}"
+            action_obs = "below" if root_value < target_value else "above"
+            action_txt = "increasing" if root_value < target_value else "decreasing"
+            action_val = target_value - root_value
+            insight = "I've noticed that this member of staff's '{}' is {} the norm. " \
+                      "You may want to consider {} his/her '{}' by {}".format(root_key, action_obs, action_txt, root_key, action_val)
+
+            print(insight)
 
         # Do a simple less than for numerical values...and check to see where things are different for categories.
         print(staff_profile)
