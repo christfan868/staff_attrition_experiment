@@ -124,32 +124,13 @@ ax.set_xlabel("Reason for Leaving", fontsize=12)
 ax.set_ylabel("No. of Employees", fontsize=12)
 # plt.show()
 
-
-# Which factor contributed most to turnover?
-# What does the profile of someone who is likely to leave look like?
-# Factors contributing to satisfaction levels among staff who left.
-print("Factors contributing to satisfaction levels among staff who left.")
+# Create a dataframe for folks who left.
 left_df = df[df['left'] == 1]
-print(left_df.corr(method='pearson')['satisfaction_level'][1:].sort_values(ascending=False))
-'''
 
-time_spend_company       0.446440
-number_project          -0.227113
-last_evaluation          0.182295
-average_montly_hours    -0.084117
-
-# Check for nulls in field. 
-df.isnull().any()
-
-'''
-
-
-# What does the profile of someone who is likely to stay look like?
+# Create a dataframe for folks who stayed.
 stay_df = df[df['left'] == 0]
 
 
-print("Factors contributing to satisfaction levels among staff who stay.")
-print(stay_df.corr(method='pearson')['satisfaction_level'][1:].sort_values(ascending=False))
 '''
 
 time_spend_company      -0.168791
@@ -160,11 +141,7 @@ average_montly_hours     0.055354
 
 '''
 
-# TODO: Use the correlations to show which areas you will be focusing on when using the retention profile.
-# Use outliers to remove values below the scores...
-
-
-# apply to multiple fns to multiple cols
+# What does the profile of someone who is likely to stay look like?
 print("\nStay Profile\n")
 retention_profile = pd.DataFrame(columns=[list(df)])
 retention_profile = retention_profile.drop('left', 1)  # Drop the 'left' column
@@ -201,11 +178,6 @@ print(retention_profile)
 # retention_profile.to_hdf('Staff_Retention_Profile.h5', 'retention_profile')
 retention_profile.to_pickle('Retention_Profile.pkl')
 
-
-# What are the factors that are correlated to the satisfaction level?
-print('\n\nCorrelations to satisfaction')
-satisfaction_df = correlations['satisfaction_level'][1:]  # .abs().sort_values(ascending=False)
-print(satisfaction_df)
 '''
 
 number_project          -0.142970
@@ -215,9 +187,38 @@ average_montly_hours    -0.020048
 
 '''
 
-# list(satisfaction_df[1:])
+'''
+The above dataframe looks like this: 
+last_evaluation          0.105021
+number_project          -0.142970
+average_montly_hours    -0.020048
+time_spend_company      -0.100866
+Work_accident            0.058697
+left                    -0.388375
+promotion_last_5years    0.025605
 
-satisfaction_df.to_pickle('Satisfaction_Factors.pkl')
+
+last_evaluation          0.105021
+number_project          -0.142970
+average_montly_hours    -0.020048
+time_spend_company      -0.100866
+Work_accident            0.058697
+promotion_last_5years    0.025605
+
+
+'last_evaluation'
+'number_project'
+'average_montly_hours'
+'time_spend_company'
+'Work_accident'
+'promotion_last_5years'
+'department'???
+'salary'???
+
+
+'''
+
+# list(satisfaction_df[1:])
 
 
 # Plot the satisfaction and time spent...
@@ -261,10 +262,46 @@ df[['number_project','average_montly_hours', 'time_spend_company', 'department',
 # A quick look at the new DataFrame
 print(df.head(5))
 
+'''
+CORRELATIONS
+'''
+# Which factor contributed most to turnover?
+# What does the profile of someone who is likely to leave look like?
+# Factors contributing to satisfaction levels among staff who left.
+print("Factors contributing to satisfaction levels among staff who left.")
+leftDF2 = df[df['left'] == 1]
+print(leftDF2.corr(method='pearson')['satisfaction_level'][1:].sort_values(ascending=False))
+'''
+
+time_spend_company       0.446440
+number_project          -0.227113
+last_evaluation          0.182295
+average_montly_hours    -0.084117
+
+# Check for nulls in field. 
+df.isnull().any()
+
+'''
+
+
+stayDF2 = df[df['left'] == 0]
+print("Factors contributing to satisfaction levels among staff who stay.")
+print(stayDF2.corr(method='pearson')['satisfaction_level'][1:].sort_values(ascending=False))
+
+
+# What are the factors that are correlated to the satisfaction level?
+print('\n\nCorrelations to satisfaction')
+correlations2 = df.corr(method='pearson')
+satisfaction_df = correlations2['satisfaction_level'][1:].abs().sort_values(ascending=False)
+satisfaction_df = satisfaction_df.drop('left')
+print(satisfaction_df)
+satisfaction_df.to_pickle('Satisfaction_Factors.pkl')
+
 
 # 2. Define Model.
 model = Sequential()
-model.add(Dense(12, input_dim=9, init='normal', activation='relu'))
+model.add(Dense(15, input_dim=9, init='normal', activation='relu'))
+model.add(Dense(12, init='normal', activation='relu'))
 model.add(Dense(9, init='normal', activation='relu'))
 model.add(Dense(6, init='normal', activation='relu'))
 model.add(Dense(3, init='normal', activation='relu'))
@@ -272,8 +309,14 @@ model.add(Dense(1, init='normal', activation='sigmoid'))
 
 
 # 3. Compile Model.
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+# model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='binary_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 # Score of this architecture: loss: 0.1028 - acc: 0.9705
+# score = model.evaluate(x_test, y_test, batch_size=128)
+'''
+standard_scalerX = StandardScaler()
+standard_scalerX.fit(X_test)
+'''
 
 
 # 4. Fit Model.
@@ -292,6 +335,14 @@ X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test_size, r
 np.save('X_test.npy', X_test)
 np.save('Y_test.npy', Y_test)
 
+TrainDF, TestDF = train_test_split(df, test_size=test_size, random_state=seed)
+
+# Create a test dataframe
+TestDF.to_pickle('Test_DF.pkl')
+
+print(TestDF)
+
+# exit()
 
 # 5. Evaluate Model.
 # Train the model using the X and Y values created.
