@@ -11,7 +11,8 @@ import pandas as pd
 from pandas.tools.plotting import scatter_matrix
 import matplotlib.pyplot as plt
 from matplotlib import style
-
+import seaborn as sbs
+import pickle
 
 # For model building
 from keras.models import Sequential
@@ -35,6 +36,16 @@ from sklearn.model_selection import train_test_split
 # b) Load dataset
 df = pd.read_csv("HR_comma_sep.csv")
 df.rename(columns={'sales': 'department'}, inplace=True)  # Rename 'sales' column to 'department'
+
+# Save column names for use in the Insight Generation.
+column_names = df.columns.values
+column_names = column_names[column_names!='left']  # Remove the 'left' column
+'''
+index = np.argwhere(x==3)
+y = np.delete(x, index)
+'''
+# pickle.dump(column_names, open('column_names.p', 'wb'))
+np.save('column_names.npy', column_names)
 
 
 '''
@@ -193,8 +204,8 @@ retention_profile.to_pickle('Retention_Profile.pkl')
 
 # What are the factors that are correlated to the satisfaction level?
 print('\n\nCorrelations to satisfaction')
-satisfaction_df = correlations['satisfaction_level']  # .abs().sort_values(ascending=False)
-print(satisfaction_df[1:])
+satisfaction_df = correlations['satisfaction_level'][1:]  # .abs().sort_values(ascending=False)
+print(satisfaction_df)
 '''
 
 number_project          -0.142970
@@ -204,19 +215,24 @@ average_montly_hours    -0.020048
 
 '''
 
+# list(satisfaction_df[1:])
+
+satisfaction_df.to_pickle('Satisfaction_Factors.pkl')
+
+
 # Plot the satisfaction and time spent...
-style.use('ggplot')
-group_name=list(range(20))
-x = pd.cut(df['time_spend_company'], 20, labels=group_name)  # [:19]
-y = pd.cut(df['satisfaction_level'], 20, labels=group_name)  # [:19]
-plt.plot(x, y)
-plt.title('Job Satisfaction x Time Spent')
-plt.ylabel('Job Satisfaction')
-plt.xlabel('Time Spent')
-plt.show()
+# style.use('ggplot')
+# group_name=list(range(20))
+# x = pd.cut(df['time_spend_company'], 20, labels=group_name)  # [:19]
+# y = pd.cut(df['satisfaction_level'], 20, labels=group_name)  # [:19]
+# plt.plot(x, y)
+# plt.title('Job Satisfaction x Time Spent')
+# plt.ylabel('Job Satisfaction')
+# plt.xlabel('Time Spent')
+# plt.show()
 
 
-exit()
+# exit()
 
 # df.sort_values(by=['coverage', 'reports'], ascending=0)
 
