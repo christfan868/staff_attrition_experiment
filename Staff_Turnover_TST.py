@@ -89,9 +89,9 @@ for index, row in testDF.iterrows():
             staff_profile.loc[name, 'weight'] = weight
 
         # Current staff profile
-        print(staff_profile)
+        # print(staff_profile)
 
-        print(type(staff_profile))
+        # print(type(staff_profile))
 
 
         # Sort values of staff profile
@@ -99,12 +99,12 @@ for index, row in testDF.iterrows():
 
         # Select the first row [most pressing issue].
         root = staff_profile.iloc[[0]]
-        root_key = root.index.values
-        print("Root issue:", root_key)
+        root_key = root.index.values[0]
+        # print("Root issue:", root_key)
         root_value = staff_profile['score'][root_key].values[0]
-        print("Root value: ", root_value)
+        # print("Root value: ", root_value)
         target_value = retention_profile[root_key].values[0][0]
-        print("Retention value:", target_value)
+        # print("Retention value:", target_value)
 
         # Compare the value to the corresponding value in the retention profile.
         if root_value < target_value:
@@ -119,5 +119,5 @@ for index, row in testDF.iterrows():
             print(insight)
 
         # Do a simple less than for numerical values...and check to see where things are different for categories.
-        print(staff_profile)
+        # print(staff_profile)
         exit()
